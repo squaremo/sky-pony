@@ -1,0 +1,76 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Sky Pony</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <!--link rel="stylesheet"
+        href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/-->
+    <style type="text/css">
+      /* body { padding-top: 40px; } */
+
+      /* Make this look a bit like a mobile device. */
+      body {
+        width: 320px !important;
+        position: relative;
+        left: 50%;
+        margin-left: -160px !important;
+        height: 480px !important;
+      }
+
+    </style>
+    <script src="js/jquery-1.7.1.js"></script>
+    <script type="text/javascript"
+            src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js">
+      <script src="js/knockout-2.0.0.js"></script>
+      <script src="js/index.js"></script>
+  </head>
+  <body>
+    <div data-role="page" id="start" data-content-theme="e">
+      <header data-role="header">
+        <h1>Sky pony</h1>
+      </header>
+      <section data-role="content">
+
+        <section class="tile signal meter">
+          <span class="sample">78</span><span class="unit">msg/sec</span>
+        </section>
+
+        <section class="tile signal meter hwm">
+          <span class="sample">58</span><span class="unit">% mem</span>
+        </section>
+
+        <section class="tile signal slidingWindow sparkline">
+          <svg>
+            <line x1="0" y1="40" x2="270" y2="40"/>
+            <rect class="sample" x="5" y="19" width="20" height="20"/>
+            <rect class="sample" x="45" y="19" width="20" height="20"/>
+            <rect class="sample" x="85" y="19" width="20" height="20"/>
+            <rect class="sample" x="125" y="19" width="20" height="20"/>
+            <rect class="sample" x="165" y="19" width="20" height="20"/>
+            <rect class="sample" x="205" y="13" width="20" height="26"/>
+            <rect class="sample" x="245" y="2" width="20" height="37"/>
+          </svg>
+          <span class="unit">queues</span>
+        </section>
+
+      </section>
+      <footer data-role="footer">
+        <h3>There it goes...</h3>
+      </footer>
+    </div>
+
+    <div data-role="page" id="ui-elements">
+      <div data-role="header">
+        <h1>Sky pony</h1>
+      </div>
+      <div data-role="content">
+        <p>Here comes the sky pony!</p>
+      </div>
+      <div data-role="footer">
+        <h3>There it goes...</h3>
+      </div>
+    </div>
+  </body>
+</html>

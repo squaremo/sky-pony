@@ -1,0 +1,69 @@
+.tile {
+    width: 100%;
+    height: 60px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #999;
+}
+
+/* A varying value */
+
+.signal {
+}
+
+/* kinds of display: just a value (with its unit) */
+
+.meter {
+    text-align: center;
+}
+
+.meter .sample {
+    font-size: 62px;
+    font-weight: bold;
+    text-shadow: 3px 3px 7px #666;
+}
+
+/* something exceeding a high water mark */
+
+.hwm {
+    color: #f33;
+}
+
+.meter .unit {
+    margin-left: 6px;
+    font-size: 14px;
+    position: relative;
+    top: -16px;
+}
+
+/* a shifting window of values */
+
+.slidingWindow .sample {
+    position: relative;
+    font-size: 30px;
+    display: inline-block;
+}
+.slidingWindow .sample:after {
+    content: '...';
+}
+
+.slidingWindow .unit {
+    display: block;
+    text-align: center;
+}
+
+.slidingWindow svg {
+    width: 100%;
+    height: 46px;
+    padding-top: 10px;
+}
+.slidingWindow svg rect {
+    fill: #66f;
+}
+.slidingWindow svg rect:last-child {
+    fill: #00c;
+}
+
+.slidingWindow svg line {
+    stroke-width: 1.5;
+    stroke: #000;
+}
