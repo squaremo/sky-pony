@@ -48,7 +48,8 @@
           <span class="sample" data-bind="text: memory()"></span><span class="unit">% mem</span>
         </section>
 
-        <section class="tile signal slidingWindow sparkline">
+        <section class="tile signal slidingWindow sparkline"
+                 data-bind="css: {hwm: messages_hwm()} ">
           <!-- I can't make this work. Possible knockout.js bug? -->
           <!-- svg>
             <line x1="0" y1="40" x2="270" y2="40"/>
@@ -61,7 +62,12 @@
                                        height: (40 * $data.value) }"/>
             </g>
           </svg -->
-          <div data-bind="foreach: messages_window.samples()">
+          <div class="meter">
+            <span class="sample"
+                  data-bind="text: decimalplaces(messages_window.average(), 0)"></span>
+            <span class="unit">avg</span>
+          </div>
+          <div class="values" data-bind="foreach: messages_window.samples()">
             <span class="sample" data-bind="text: $data">
             </span>
           </div>

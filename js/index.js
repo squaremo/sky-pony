@@ -23,6 +23,26 @@ function SlidingWindow(len) {
     return max;
   }, self);
 
+  // Yes yes, abstraction
+  this.minimum = ko.computed(function() {
+    var samples = self.samples();
+    var min = samples[0], i = samples.length;
+    while (--i > 0) {
+      if (samples[i] < min) min = samples[i];
+    }
+    return min;
+  }, self);
+
+  this.sum = ko.computed(function() {
+    var sum = 0;
+    self.samples().forEach(function(v) { sum += v; });
+    return sum;
+  });
+
+  this.average = ko.computed(function() {
+    return self.sum() / self.samples().length;
+  }, self);
+
   this.scaled = ko.computed(function() {
     var max = self.maximum();
     var values = [];
@@ -32,7 +52,7 @@ function SlidingWindow(len) {
     return values;
   }, self);
 
-  this.add = function(value) {
+  this.push = function(value) {
     if (self.samples().length + 1 > len) {
       self.samples.shift();
     }
@@ -40,6 +60,9 @@ function SlidingWindow(len) {
   }
 }
 model.messages_window = new SlidingWindow(7);
+model.messages_hwm = ko.computed(function() {
+  return model.messages_window.average() > 20000;
+});
 
 // this probably won't work. bloody floats.
 function decimalplaces(val, digits) {
@@ -63,6 +86,6 @@ socket.onmessage = function(msg) {
   else if (event.overview) {
     model.mps(decimalplaces(event.overview.message_stats.publish_details.rate, 1));
     var mw = model.messages_window;
-    mw.add(event.overview.queue_totals.messages);
+    mw.push(event.overview.queue_totals.messages);
   }
 };

@@ -37,12 +37,12 @@
 
 /* a shifting window of values */
 
-.slidingWindow .sample {
+.slidingWindow .values .sample {
     position: relative;
     font-size: 30px;
     display: inline-block;
 }
-.slidingWindow .sample:after {
+.slidingWindow .values .sample:after {
     content: '...';
 }
 
