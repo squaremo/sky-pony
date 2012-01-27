@@ -40,7 +40,8 @@ function SlidingWindow(len) {
   });
 
   this.average = ko.computed(function() {
-    return self.sum() / self.samples().length;
+    var len = self.samples().length;
+    return (len > 0) ? self.sum() / self.samples().length : 0;
   }, self);
 
   this.scaled = ko.computed(function() {
@@ -72,7 +73,6 @@ function decimalplaces(val, digits) {
 }
 
 socket.onmessage = function(msg) {
-  console.log(msg.data);
   var event = JSON.parse(msg.data);
   if (event.nodes) {
     var total = 0, number = 0;
@@ -80,7 +80,6 @@ socket.onmessage = function(msg) {
       total += (node.mem_used / node.mem_limit);
       number++;
     });
-    console.log(total / number);
     model.memory(decimalplaces(100 * total / number, 2));
   }
   else if (event.overview) {
