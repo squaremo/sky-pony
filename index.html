@@ -22,42 +22,55 @@
     </style>
     <script src="js/jquery-1.7.1.js"></script>
     <script type="text/javascript"
-            src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js">
-      <script src="js/knockout-2.0.0.js"></script>
-      <script src="js/index.js"></script>
+            src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    <script src="js/knockout-2.0.0.js"></script>
+    <script src="http://cdn.sockjs.org/sockjs-0.2.min.js"></script>
+    <script src="js/index.js"></script>
+    <script type="text/javascript">
+      $(document).on('pageinit', function() {
+        console.log("Ready");
+        ko.applyBindings(model);
+      });
+    </script>
   </head>
   <body>
     <div data-role="page" id="start" data-content-theme="e">
       <header data-role="header">
-        <h1>Sky pony</h1>
+        <h1>RabbitMQ Health</h1>
       </header>
       <section data-role="content">
 
         <section class="tile signal meter">
-          <span class="sample">78</span><span class="unit">msg/sec</span>
+          <span class="sample" data-bind="text: mps"></span><span class="unit">msg/sec</span>
         </section>
 
-        <section class="tile signal meter hwm">
-          <span class="sample">58</span><span class="unit">% mem</span>
+        <section class="tile signal meter" data-bind="css: {hwm: memory_hwm()}">
+          <span class="sample" data-bind="text: memory()"></span><span class="unit">% mem</span>
         </section>
 
         <section class="tile signal slidingWindow sparkline">
-          <svg>
+          <!-- I can't make this work. Possible knockout.js bug? -->
+          <!-- svg>
             <line x1="0" y1="40" x2="270" y2="40"/>
-            <rect class="sample" x="5" y="19" width="20" height="20"/>
-            <rect class="sample" x="45" y="19" width="20" height="20"/>
-            <rect class="sample" x="85" y="19" width="20" height="20"/>
-            <rect class="sample" x="125" y="19" width="20" height="20"/>
-            <rect class="sample" x="165" y="19" width="20" height="20"/>
-            <rect class="sample" x="205" y="13" width="20" height="26"/>
-            <rect class="sample" x="245" y="2" width="20" height="37"/>
-          </svg>
-          <span class="unit">queues</span>
+            <g>
+              <rect class="sample" width="20" height="20" x="10" y="30"/>
+            </g>
+            <g data-bind="foreach: messages_window.scaled()">
+              <rect data-bind="attr: { x: $data.index * 40 + 5,
+                                       y: 40 - (40 * $data.value),
+                                       height: (40 * $data.value) }"/>
+            </g>
+          </svg -->
+          <div data-bind="foreach: messages_window.samples()">
+            <span class="sample" data-bind="text: $data">
+            </span>
+          </div>
+          <span class="unit">messages</span>
         </section>
 
       </section>
       <footer data-role="footer">
-        <h3>There it goes...</h3>
+        <h3>... Buttons ...</h3>
       </footer>
     </div>
 
