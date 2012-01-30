@@ -60,7 +60,7 @@ function SlidingWindow(len) {
     self.samples.push(value);
   }
 }
-model.messages_window = new SlidingWindow(7);
+model.messages_window = new SlidingWindow(3);
 model.messages_hwm = ko.computed(function() {
   return model.messages_window.average() > 20000;
 });

@@ -1,8 +1,15 @@
+/* Correct for jquery mobile */
+.ui-content {
+   padding: 0px;
+}
+
 .tile {
-    width: 100%;
-    height: 60px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #999;
+   width: 100%;
+   height: 60px;
+   padding-bottom: 20px;
+   border-bottom: 2px solid #999;
+   border-top: 2px solid #fff;
+   background-image: -webkit-linear-gradient(top, #ddd, #ffe);
 }
 
 /* A varying value */

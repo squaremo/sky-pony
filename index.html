@@ -34,7 +34,7 @@
     </script>
   </head>
   <body>
-    <div data-role="page" id="start" data-content-theme="e">
+    <div data-role="page" id="start" data-content-theme="c">
       <header data-role="header">
         <h1>RabbitMQ Health</h1>
       </header>
@@ -65,13 +65,8 @@
           <div class="meter">
             <span class="sample"
                   data-bind="text: decimalplaces(messages_window.average(), 0)"></span>
-            <span class="unit">avg</span>
+            <span class="unit">moving avg msgs</span>
           </div>
-          <div class="values" data-bind="foreach: messages_window.samples()">
-            <span class="sample" data-bind="text: $data">
-            </span>
-          </div>
-          <span class="unit">messages</span>
         </section>
 
       </section>
