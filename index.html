@@ -23,6 +23,7 @@
     <script src="js/jquery-1.7.1.js"></script>
     <script type="text/javascript"
             src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
     <script src="js/knockout-2.0.0.js"></script>
     <script src="http://cdn.sockjs.org/sockjs-0.2.min.js"></script>
     <script src="js/model.js"></script>
@@ -42,9 +43,12 @@
       </header>
       <section data-role="content" data-bind="foreach: meters">
 
-        <section class="tile signal meter" data-bind="css: {'hwm' : $data.hwm}">
+        <section class="tile signal meter" data-bind="css: {'hwm' : $data.hwm()}">
           <span class="sample" data-bind="text: $data.value()"></span>
           <span class="unit" data-bind="text: $data.unit"></span>
+          <span class="sparkline" data-bind="if: $data.has_sparkline">
+            <div data-bind="sparkline: sparkline()"/>
+          </span>
         </section>
 
       </section>

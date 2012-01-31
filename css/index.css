@@ -27,6 +27,19 @@
     font-size: 62px;
     font-weight: bold;
     text-shadow: 3px 3px 7px #666;
+   position: relative;
+}
+
+.meter .sparkline {
+   width: 100%;
+   height: 60px;
+}
+
+.meter .sparkline div {
+   margin-top: -60px;
+}
+
+.meter .sparkline canvas {
 }
 
 /* something exceeding a high water mark */

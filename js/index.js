@@ -13,13 +13,30 @@ meters.push(new Meter(mps, {'unit': 'msg / sec'}));
 var messages_window = new SlidingWindow(3);
 meters.push(new Meter(messages_window.average,
                       {'unit': 'moving avg total msgs',
-                       'hwm': 100000}));
+                       'hwm': 100000,
+                       'sparkline': messages_window.samples}));
 
 // this probably won't work. bloody floats.
 function decimalplaces(val, digits) {
   var mult = Math.pow(10, digits);
   var rounded = Math.round(val * mult);
   return rounded / mult;
+}
+
+ko.bindingHandlers.sparkline = {
+  init: function(element, valueAccessor, _allBindingsAccessor) {
+    console.log(valueAccessor());
+    $(element).sparkline(valueAccessor());
+  },
+  update: function(element, valueAccessor, _allBindingsAccessor) {
+    console.log(valueAccessor());
+    $(element).sparkline(valueAccessor(), {'width': '100%',
+                                           'height': '50px',
+                                           'chartRangeMin': 0,
+                                           'spotColor': '#fff',
+                                           'lineColor': '#666',
+                                           'fillColor': '#ccc'});
+  }
 }
 
 socket.onmessage = function(msg) {
