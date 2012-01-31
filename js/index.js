@@ -1,69 +1,19 @@
 var socket = new SockJS('/socket');
 
-model = {};
+model = {'columnTitle': "RabbitMQ health"};
 
-model.memory = ko.observable(0);
-model.memory_hwm = ko.computed(function() {
-  return model.memory() > 50;
-});
+var meters = model.meters = [];
 
-model.mps = ko.observable(0);
+var memory = ko.observable(0);
+meters.push(new Meter(memory, {'unit': '% memory', 'hwm': 50}));
 
-function SlidingWindow(len) {
-  var self = this;
+var mps = ko.observable(0);
+meters.push(new Meter(mps, {'unit': 'msg / sec'}));
 
-  this.samples = ko.observableArray();
-
-  this.maximum = ko.computed(function() {
-    var samples = self.samples();
-    var max = samples[0], i = samples.length;
-    while (--i > 0) {
-      if (samples[i] > max) max = samples[i];
-    }
-    return max;
-  }, self);
-
-  // Yes yes, abstraction
-  this.minimum = ko.computed(function() {
-    var samples = self.samples();
-    var min = samples[0], i = samples.length;
-    while (--i > 0) {
-      if (samples[i] < min) min = samples[i];
-    }
-    return min;
-  }, self);
-
-  this.sum = ko.computed(function() {
-    var sum = 0;
-    self.samples().forEach(function(v) { sum += v; });
-    return sum;
-  });
-
-  this.average = ko.computed(function() {
-    var len = self.samples().length;
-    return (len > 0) ? self.sum() / self.samples().length : 0;
-  }, self);
-
-  this.scaled = ko.computed(function() {
-    var max = self.maximum();
-    var values = [];
-    self.samples().forEach(function(v, i) {
-      values.push({index: i, value: (max > 0) ? v / max : 0});
-    });
-    return values;
-  }, self);
-
-  this.push = function(value) {
-    if (self.samples().length + 1 > len) {
-      self.samples.shift();
-    }
-    self.samples.push(value);
-  }
-}
-model.messages_window = new SlidingWindow(3);
-model.messages_hwm = ko.computed(function() {
-  return model.messages_window.average() > 20000;
-});
+var messages_window = new SlidingWindow(3);
+meters.push(new Meter(messages_window.average,
+                      {'unit': 'moving avg total msgs',
+                       'hwm': 100000}));
 
 // this probably won't work. bloody floats.
 function decimalplaces(val, digits) {
@@ -80,11 +30,10 @@ socket.onmessage = function(msg) {
       total += (node.mem_used / node.mem_limit);
       number++;
     });
-    model.memory(decimalplaces(100 * total / number, 2));
+    memory(decimalplaces(100 * total / number, 2));
   }
   else if (event.overview) {
-    model.mps(decimalplaces(event.overview.message_stats.publish_details.rate, 1));
-    var mw = model.messages_window;
-    mw.push(event.overview.queue_totals.messages);
+    mps(decimalplaces(event.overview.message_stats.publish_details.rate, 1));
+    messages_window.push(event.overview.queue_totals.messages);
   }
 };
