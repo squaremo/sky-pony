@@ -23,11 +23,9 @@ meters.push(new Meter(messages_window.average,
 
 ko.bindingHandlers.sparkline = {
   init: function(element, valueAccessor, _allBindingsAccessor) {
-    console.log(valueAccessor());
     $(element).sparkline(valueAccessor());
   },
   update: function(element, valueAccessor, _allBindingsAccessor) {
-    console.log(valueAccessor());
     $(element).sparkline(valueAccessor(), {
       'type': 'bar',
       'width': '100%',
