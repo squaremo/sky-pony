@@ -1,24 +1,42 @@
 var socket = new SockJS('/socket');
 
-model = {};
+model = {'columnTitle': "RabbitMQ health"};
 
-model.memory = ko.observable(0);
-model.memory_hwm = ko.computed(function() {
-  return model.memory() > 50;
-});
+var meters = model.meters = [];
 
-model.mps = ko.observable(0);
+var memory = ko.observable(0);
+meters.push(new Meter(memory, {'unit': '% memory',
+                               'precision': 1,
+                               'hwm': 50}));
 
-model.messages_window = new SlidingWindow(3);
-model.messages_hwm = ko.computed(function() {
-  return model.messages_window.average() > 20000;
-});
+var mps = ko.observable(0);
+meters.push(new Meter(mps, {'unit': 'msg / sec',
+                            'precision': 0}));
 
-// this probably won't work. bloody floats.
-function decimalplaces(val, digits) {
-  var mult = Math.pow(10, digits);
-  var rounded = Math.round(val * mult);
-  return rounded / mult;
+var messages_window = new SlidingWindow(3);
+var big_messages_window = new SlidingWindow(20);
+meters.push(new Meter(messages_window.average,
+                      {'unit': 'moving avg total msgs',
+                       'precision': 0,
+                       'hwm': 100000,
+                       'sparkline': big_messages_window.samples}));
+
+ko.bindingHandlers.sparkline = {
+  init: function(element, valueAccessor, _allBindingsAccessor) {
+    $(element).sparkline(valueAccessor());
+  },
+  update: function(element, valueAccessor, _allBindingsAccessor) {
+    $(element).sparkline(valueAccessor(), {
+      'type': 'bar',
+      'width': '100%',
+      'height': '80px',
+      'chartRangeMin': 0,
+      'spotColor': '#fff',
+      'lineColor': '#666',
+      'barColor': '#ccc',
+      'barWidth': 14,
+      'fillColor': '#ccc'});
+  }
 }
 
 socket.onmessage = function(msg) {
@@ -29,11 +47,11 @@ socket.onmessage = function(msg) {
       total += (node.mem_used / node.mem_limit);
       number++;
     });
-    model.memory(decimalplaces(100 * total / number, 2));
+    memory(decimalplaces(100 * total / number, 2));
   }
   else if (event.overview) {
-    model.mps(decimalplaces(event.overview.message_stats.publish_details.rate, 1));
-    var mw = model.messages_window;
-    mw.push(event.overview.queue_totals.messages);
+    mps(decimalplaces(event.overview.message_stats.publish_details.rate, 1));
+    messages_window.push(event.overview.queue_totals.messages);
+    big_messages_window.push(event.overview.queue_totals.messages);
   }
 };

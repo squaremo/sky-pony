@@ -22,8 +22,10 @@
     <script src="js/jquery-1.7.1.js"></script>
     <script type="text/javascript"
             src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
     <script src="js/knockout-2.0.0.js"></script>
     <script src="http://cdn.sockjs.org/sockjs-0.2.min.js"></script>
+    <script src="js/model.js"></script>
     <script src="js/events.js"></script>
     <script src="js/index.js"></script>
     <script type="text/javascript">
@@ -36,37 +38,16 @@
   <body>
     <div data-role="page" id="start" data-content-theme="c">
       <header data-role="header">
-        <h1>RabbitMQ Health</h1>
+        <h1 data-bind="text: columnTitle"></h1>
       </header>
-      <section data-role="content">
+      <section data-role="content" data-bind="foreach: meters">
 
-        <section class="tile signal meter">
-          <span class="sample" data-bind="text: mps"></span><span class="unit">msg/sec</span>
-        </section>
-
-        <section class="tile signal meter" data-bind="css: {hwm: memory_hwm()}">
-          <span class="sample" data-bind="text: memory()"></span><span class="unit">% mem</span>
-        </section>
-
-        <section class="tile signal slidingWindow sparkline"
-                 data-bind="css: {hwm: messages_hwm()} ">
-          <!-- I can't make this work. Possible knockout.js bug? -->
-          <!-- svg>
-            <line x1="0" y1="40" x2="270" y2="40"/>
-            <g>
-              <rect class="sample" width="20" height="20" x="10" y="30"/>
-            </g>
-            <g data-bind="foreach: messages_window.scaled()">
-              <rect data-bind="attr: { x: $data.index * 40 + 5,
-                                       y: 40 - (40 * $data.value),
-                                       height: (40 * $data.value) }"/>
-            </g>
-          </svg -->
-          <div class="meter">
-            <span class="sample"
-                  data-bind="text: decimalplaces(messages_window.average(), 0)"></span>
-            <span class="unit">moving avg msgs</span>
-          </div>
+        <section class="tile signal meter" data-bind="css: {'hwm' : $data.hwm()}">
+          <span class="sample" data-bind="text: $data.value()"></span>
+          <span class="unit" data-bind="text: $data.unit"></span>
+          <span class="sparkline" data-bind="if: $data.has_sparkline">
+            <div data-bind="sparkline: sparkline()"/>
+          </span>
         </section>
 
       </section>

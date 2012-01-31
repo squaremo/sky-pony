@@ -1,3 +1,5 @@
+// Things for processing events as they come in.
+
 function SlidingWindow(len) {
   var self = this;
 
@@ -21,6 +23,8 @@ function SlidingWindow(len) {
     }
     return min;
   }, self);
+
+  // These ff might be easier given .added and .removed
 
   this.sum = ko.computed(function() {
     var sum = 0;

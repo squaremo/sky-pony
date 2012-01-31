@@ -21,56 +21,42 @@
 
 .meter {
     text-align: center;
+   position: relative;
 }
 
 .meter .sample {
     font-size: 62px;
     font-weight: bold;
     text-shadow: 3px 3px 7px #666;
+   position: relative;
+   z-index: 10;
+}
+
+.meter .unit {
+   display: block;
+   text-align: center;
+    margin-left: 6px;
+    font-size: 13px;
+    position: relative;
+   z-index: 10;
+   top: -9px;
+}
+
+.meter .sparkline {
+}
+
+.meter .sparkline div {
+   top: 0px;
+   height: 80px;
+   position: absolute;
+   z-index: 5;
+}
+
+.meter .sparkline canvas {
 }
 
 /* something exceeding a high water mark */
 
 .hwm {
-    color: #f33;
-}
-
-.meter .unit {
-    margin-left: 6px;
-    font-size: 14px;
-    position: relative;
-    top: -16px;
-}
-
-/* a shifting window of values */
-
-.slidingWindow .values .sample {
-    position: relative;
-    font-size: 30px;
-    display: inline-block;
-}
-.slidingWindow .values .sample:after {
-    content: '...';
-}
-
-.slidingWindow .unit {
-    display: block;
-    text-align: center;
-}
-
-.slidingWindow svg {
-    width: 100%;
-    height: 46px;
-    padding-top: 10px;
-}
-.slidingWindow svg rect {
-    fill: #66f;
-}
-.slidingWindow svg rect:last-child {
-    fill: #00c;
-}
-
-.slidingWindow svg line {
-    stroke-width: 1.5;
-    stroke: #000;
+    color: #e33;
 }
