@@ -1,0 +1,20 @@
+{
+  "author": "Michael Bridgen <mikeb@squaremobius.net>",
+  "name": "sky-pony",
+  "description": "Reactive interface.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/squaremo/sky-pony.git"
+  },
+  "main": "./app",
+  "engines": {
+    "node": "~0.6"
+  },
+  "dependencies": {
+    "express": "*",
+    "sockjs": "~0.2",
+    "rabbit.js": "~0.2"
+  },
+  "devDependencies": {}
+}
