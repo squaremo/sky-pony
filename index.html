@@ -47,7 +47,7 @@
           <span class="sample" data-bind="text: $data.value()"></span>
           <span class="unit" data-bind="text: $data.unit"></span>
           <span class="sparkline" data-bind="if: $data.has_sparkline">
-            <div data-bind="sparkline: sparkline()"/>
+            <div data-bind="sparkline: $data.sparkline"/>
           </span>
         </section>
 

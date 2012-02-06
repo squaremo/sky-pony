@@ -19,23 +19,38 @@ meters.push(new Meter(messages_window.average,
                       {'unit': 'moving avg total msgs',
                        'precision': 0,
                        'hwm': 100000,
-                       'sparkline': big_messages_window.samples}));
+                       'sparkline': big_messages_window}));
+
+var sparkline_opts1 = {
+  'composite': true,
+  'type': 'bar',
+  'width': '320px',
+  'height': '80px',
+  'chartRangeMin': 0,
+  'barColor': '#ccc',
+  'barWidth': 14
+};
+
+function sparkline_opts2(len) {
+  return {
+    'type': 'line',
+    'width': (len * 16) + 'px',
+    'height': '80px',
+    'chartRangeMin': 0,
+    'spotColor': '#fff',
+    'lineColor': '#666',
+    'fillColor': '#ccc'
+  };
+}
 
 ko.bindingHandlers.sparkline = {
   init: function(element, valueAccessor, _allBindingsAccessor) {
-    $(element).sparkline(valueAccessor());
+    $(element).sparkline(valueAccessor().samples(), sparkline_opts1);
   },
   update: function(element, valueAccessor, _allBindingsAccessor) {
-    $(element).sparkline(valueAccessor(), {
-      'type': 'bar',
-      'width': '100%',
-      'height': '80px',
-      'chartRangeMin': 0,
-      'spotColor': '#fff',
-      'lineColor': '#666',
-      'barColor': '#ccc',
-      'barWidth': 14,
-      'fillColor': '#ccc'});
+    var samples = valueAccessor().samples();
+    $(element).sparkline(valueAccessor().average(), sparkline_opts2(samples.length));
+//    $(element).sparkline(samples, sparkline_opts1);
   }
 }
 
