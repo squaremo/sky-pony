@@ -12,9 +12,32 @@
    background-image: -webkit-linear-gradient(top, #ddd, #ffe);
 }
 
+.tile p {
+   padding: 8px;
+}
+
+.formula {
+   background-image: -webkit-linear-gradient(top, #666, transparent 12px );
+   padding: 8px;
+}
+
+.source {
+/*   background-image: -webkit-linear-gradient(top, #cec, #efe ); */
+}
+
 /* A varying value */
 
 .signal {
+}
+
+.carousel {
+   text-align: center;
+   vertical-align: middle;
+   font-size: 26px;
+   padding-top: 18px;
+}
+.carousel .sample:after {
+   content: '...';
 }
 
 /* kinds of display: just a value (with its unit) */
