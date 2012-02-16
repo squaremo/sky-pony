@@ -36,36 +36,67 @@
     </script>
   </head>
   <body>
+
     <div data-role="page" id="start" data-content-theme="c">
       <header data-role="header">
-        <h1 data-bind="text: columnTitle"></h1>
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>[0]</h1>
+        <a href="#" data-role="button"
+           data-iconpos="notext" data-icon="star">
+          Promote
+        </a>
       </header>
-      <section data-role="content" data-bind="foreach: meters">
 
-        <section class="tile signal meter" data-bind="css: {'hwm' : $data.hwm()}">
-          <span class="sample" data-bind="text: $data.value()"></span>
-          <span class="unit" data-bind="text: $data.unit"></span>
-          <span class="sparkline" data-bind="if: $data.has_sparkline">
-            <div data-bind="sparkline: $data.sparkline"/>
-          </span>
+      <section class="column" data-role="content"
+               data-bind="ifnot: visibleColumns().length">
+        <section class="tile">
+          <a href="#new" data-role="button"
+             data-bind="click: $data.addColumn"
+             data-icon="arrow-d" data-iconpos="bottom">Click to start</a>
         </section>
+      </section>
 
+      <section class="column" data-role="content"
+               data-bind="foreach: visibleColumns">
+        <!-- ko foreach: $data.def.tiles -->
+        <div class="tile">
+          <div data-bind="click: edit,
+                          template: {name: view().template + '-template',
+                                     data: view}">
+          </div>
+        </div>
+        <form data-bind="visible: editing,
+                         submit: function() {$root.save($data); return false;}"
+              class="formula">
+          <input data-bind="value: formula"/>
+          <input type="submit" data-role="button" data-icon="arrow-u" value="Apply"/>
+        </form>
+        <!-- /ko -->
       </section>
       <footer data-role="footer">
         <h3>... Buttons ...</h3>
       </footer>
     </div>
 
-    <div data-role="page" id="ui-elements">
-      <div data-role="header">
-        <h1>Sky pony</h1>
+    <script type="text/html" id="formula-template">
+      <div class="">
+        <span data-bind="text: value"/>
       </div>
-      <div data-role="content">
-        <p>Here comes the sky pony!</p>
+    </script>
+
+    <script type="text/html" id="value-template">
+      <div class="">
+        <span data-bind="text: value"/>
       </div>
-      <div data-role="footer">
-        <h3>There it goes...</h3>
+    </script>
+
+    <script type="text/html" id="carousel-template">
+      <div class="carousel">
+        <!-- ko foreach: entries -->
+        <span data-bind="text: $data.title"/>
+        <!-- /ko -->
       </div>
-    </div>
+    </script>
+
   </body>
 </html>

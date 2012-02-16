@@ -24,3 +24,42 @@ function Meter(observable, attributes) {
   this.sparkline = attributes.sparkline;
   this.has_sparkline = !!attributes.sparkline;
 }
+
+function Column() {
+  this.tiles = ko.observableArray();
+  this.tiles.push(new Tile());
+}
+
+function Tile() {
+  var that = this;
+  this.editing = ko.observable(true);
+  this.formula = ko.observable('');
+
+  this.save = function() {
+    that.editing(false);
+  };
+
+  this.edit = function() {
+    that.editing(true);
+  };
+
+  this.view = ko.observable(new Formula(this.formula));
+}
+
+// === Views
+
+function Stack(observableCollection, attributes) {
+  this.entries = observableCollection;
+  this.folded = ko.observable(true);
+  this.template = 'carousel';
+}
+
+function Formula(formula) {
+  this.value = formula;
+  this.template = 'formula';
+}
+
+function Value(observable) {
+  this.value = observable;
+  this.template = 'value';
+}
