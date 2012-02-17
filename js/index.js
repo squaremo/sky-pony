@@ -15,7 +15,6 @@ model.visibleColumns = ko.computed(function() {
   var leftmost = model.leftmostColumn();
   var maxCols = defs.length;
   var possCols = leftmost + model.numVisibleColumns();
-  console.log({max: maxCols, poss: possCols});
   for (var i = leftmost; i < possCols && i < maxCols; i++) {
     cols.push({index: i, def: defs[i]});
   }
@@ -30,8 +29,6 @@ var socket = new SockJS('/socket');
 var subscriber = new Subscriber(socket);
 
 model.save = function(tile) {
-  console.log("Saving ");
-  console.log(tile);
   tile.save();
   var url = tile.formula();
   var updater = false;
@@ -41,24 +38,21 @@ model.save = function(tile) {
   subscriber.subscribe(url, function(update) {
     // first time we get an update, look at the content type to see
     // what kind of tile we should make.
-    console.log("Updating!");
-    console.log(update);
     if (!updater) {
       var contentType = update.contentType;
-      console.log("Sniffing: " + contentType);
       if (contentType === 'application/atom+xml') {
-        var entries = new SlidingWindow(10);
-        tile.view(new Stack(entries.samples));
+        var entries = ko.observableArray();
+        tile.view(new Stack(ko.observable(update.topic), entries));
         updater = function(entry) {
           var xml = $.parseXML(entry.data);
           entries.push({
             'title': $('title', xml).text(),
-            'href': $('link[rel=alternative]', xml).attr('href')
+            'href': $('link[rel="alternate"]', xml).attr('href')
           });
         }
       }
       else {
-        value = ko.observable(entry.data);
+        value = ko.observable(update.data);
         tile.view(new Value(value));
         updater = function(entry) {
           value(entry.data);

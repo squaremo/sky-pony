@@ -4,22 +4,16 @@ function Subscriber(socket) {
 
   var subscriptions = this.subs = {};
   socket.onmessage = function(msg) {
-    console.log("Incoming:");
-    console.log(msg);
     var js = JSON.parse(msg.data);
     var event, topic;
     if ((event = js.update) && (topic = event.topic)) {
-      console.log(event);
       if (subscriptions[topic]) {
-        console.log("Callback");
         subscriptions[topic](event);
       }
     }
   };
 
   this.subscribe = function(url, callback) {
-    console.log("Sub:");
-    console.log({url: url, callback: callback});
     subscriptions[url] = callback;
     socket.send(JSON.stringify({subscribe: url}));
   }

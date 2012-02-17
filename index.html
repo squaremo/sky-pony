@@ -22,7 +22,8 @@
     <script src="js/jquery-1.7.1.js"></script>
     <script type="text/javascript"
             src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
-    <script src="js/jquery.sparkline.min.js"></script>
+    <!-- script src="js/jquery.sparkline.min.js"></script -->
+    <!-- script src="js/jquery.carousel.js"></script -->
     <script src="js/knockout-2.0.0.js"></script>
     <script src="http://cdn.sockjs.org/sockjs-0.2.min.js"></script>
     <script src="js/model.js"></script>
@@ -59,11 +60,12 @@
       <section class="column" data-role="content"
                data-bind="foreach: visibleColumns">
         <!-- ko foreach: $data.def.tiles -->
-        <div class="tile">
-          <div data-bind="click: edit,
-                          template: {name: view().template + '-template',
-                                     data: view}">
-          </div>
+        <div data-bind="template: {name: view().template + '-template',
+                        data: view,
+                        afterRender: function(elems) {
+                          console.log(elems);
+                          $(elems).find('*[data-role]').andSelf().trigger('create');
+                        }}">
         </div>
         <form data-bind="visible: editing,
                          submit: function() {$root.save($data); return false;}"
@@ -79,23 +81,37 @@
     </div>
 
     <script type="text/html" id="formula-template">
-      <div class="">
+      <div class="tile">
         <span data-bind="text: value"/>
       </div>
     </script>
 
     <script type="text/html" id="value-template">
-      <div class="">
+      <div class="tile">
         <span data-bind="text: value"/>
       </div>
     </script>
 
-    <script type="text/html" id="carousel-template">
-      <div class="carousel">
-        <!-- ko foreach: entries -->
-        <span data-bind="text: $data.title"/>
-        <!-- /ko -->
+    <script type="text/html" id="stack-template">
+      <div class="tile">
+        <span data-bind="text: title"/>
+        (<span data-bind="text: entries().length"/>)
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="notext"
+           data-bind="visible: folded(), click: toggle">
+          Unfold
+        </a>
+        <a href="#" data-role="button" data-icon="minus" data-iconpos="notext"
+           data-bind="visible: !folded(), click: toggle">
+          Fold
+        </a>
       </div>
+      <ul data-role="listview" data-bind="visible: !folded()">
+        <!-- ko foreach: entries -->
+        <li>
+          <a data-bind="attr: {href: $data.href}, html: $data.title"/>
+        </li>
+        <!-- /ko -->
+      </ul>
     </script>
 
   </body>

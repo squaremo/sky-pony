@@ -58,17 +58,20 @@ srvcontext.on('ready', function() {
   var req = context.socket('PULL');
   req.connect('subscriptions');
   req.setEncoding('utf8');
-  req.on('data', subscriptionRequest);
+  req.on('data', function(d) {
+    subscriptionRequest(d, pub);
+  });
 });
 
 
 var dedup = snrub.dedup();
 
-function subscriptionRequest(str) {
+function subscriptionRequest(str, sock) {
   try {
     var req = JSON.parse(str);
     if (req['subscribe']) {
       scheduler.register(req.subscribe);
+      sendEntries(req.subscribe, dedup.allEntries(req.subscribe), sock);
     }
   }
   catch (err) {
@@ -96,6 +99,15 @@ function removeOtherNamespaces(element, href) {
       removeOtherNamespaces(children[i], href);
     }
   }
+}
+
+function sendEntries(topic, entries, sock) {
+  entries.forEach(function(entry) {
+    sock.write(JSON.stringify({update: {timestamp: entry.timestamp,
+                                        contentType: entry.contentType,
+                                        data: entry.data,
+                                        topic: topic}}));
+  });
 }
 
 function sendNewEntries(topic, data, headers, sock) {
@@ -136,10 +148,5 @@ function sendNewEntries(topic, data, headers, sock) {
                 'contentType': contentType,
                 'timestamp': +new Date}];
   }
-  entries.forEach(function(entry) {
-    sock.write(JSON.stringify({update: {timestamp: entry.timestamp,
-                                        contentType: entry.contentType,
-                                        data: entry.data,
-                                        topic: topic}}));
-  });
+  sendEntries(topic, entries, sock);
 }

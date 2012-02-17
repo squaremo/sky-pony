@@ -48,10 +48,12 @@ function Tile() {
 
 // === Views
 
-function Stack(observableCollection, attributes) {
+function Stack(observableTitle, observableCollection, attributes) {
+  this.title = observableTitle;
   this.entries = observableCollection;
   this.folded = ko.observable(true);
-  this.template = 'carousel';
+  this.toggle = function() { this.folded(!this.folded()); };
+  this.template = 'stack';
 }
 
 function Formula(formula) {
@@ -63,3 +65,15 @@ function Value(observable) {
   this.value = observable;
   this.template = 'value';
 }
+
+// === Knockout bindings
+
+/*
+ko.bindingHandlers.carousel = {
+  'init': function(elem) {
+    $(elem).addClass('carousel');
+    $(elem).carousel({nextPrevLinks: true, noOfRows: 1, itemsPerPage: 1});
+  },
+  'update': function() {}
+};
+*/
