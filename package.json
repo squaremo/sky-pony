@@ -14,7 +14,8 @@
   "dependencies": {
     "express": "*",
     "sockjs": "~0.2",
-    "rabbit.js": "~0.2"
+    "rabbit.js": "~0.2",
+    "libxmljs": "*"
   },
   "devDependencies": {}
 }
