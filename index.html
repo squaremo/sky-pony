@@ -63,7 +63,6 @@
         <div data-bind="template: {name: view().template + '-template',
                         data: view,
                         afterRender: function(elems) {
-                          console.log(elems);
                           $(elems).find('*[data-role]').andSelf().trigger('create');
                         }}">
         </div>
@@ -71,7 +70,8 @@
                          submit: function() {$root.save($data); return false;}"
               class="formula">
           <input data-bind="value: formula"/>
-          <input type="submit" data-role="button" data-icon="arrow-u" value="Apply"/>
+          <input type="submit"
+                 data-role="button" data-icon="arrow-u" value="Apply"/>
         </form>
         <!-- /ko -->
       </section>
@@ -83,6 +83,14 @@
     <script type="text/html" id="formula-template">
       <div class="tile">
         <span data-bind="text: value"/>
+      </div>
+    </script>
+
+    <script type="text/html" id="resource-template">
+      <div class="tile">
+        <a data-bind="text: title, attr: {href: $data.url}"/>
+        <br/>
+        <small data-bind="text: type"/>
       </div>
     </script>
 
@@ -105,7 +113,7 @@
           Fold
         </a>
       </div>
-      <ul data-role="listview" data-bind="visible: !folded()">
+      <ul data-role="listview" class="ui-listview" data-bind="visible: !folded()">
         <!-- ko foreach: entries -->
         <li>
           <a data-bind="attr: {href: $data.href}, html: $data.title"/>

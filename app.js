@@ -2,7 +2,6 @@ var express = require('express'),
   http = require('http'),
   sockjs = require('sockjs'),
   rjs = require('rabbit.js'),
-  snrub = require('snrub'),
   xml = require('libxmljs');
 
 var app = express.createServer();
@@ -16,90 +15,139 @@ var sjs = require('sockjs').listen(app, {prefix: '[/]socket'});
 app.listen(8000);
 
 // For interactive use
-module.exports.sockjs = sjs;
-module.exports.http = app;
+exports.sockjs = sjs;
+exports.http = app;
 
 
 // ==== Client connections
 
+sjs.on('connection', function(c) {
+  clientConnection(c);
+});
+
+// Sockets for us to communicate with the "backend" services
+
+var scheduler_proxy = {};
+
 var context = rjs.createContext();
 context.on('ready', function() {
+  var updates = context.socket('SUB');
+  updates.setEncoding('utf8');
+  updates.on('data', injectUpdate);
+  updates.connect('updates');
 
-  // Pipe things to and from each connection
+  var subscriptions = context.socket('PUSH');
+  subscriptions.connect('subscriptions');
 
-  sjs.on('connection', function(c) {
-    // updates from the subscription server
-    var s = context.socket('SUB');
-    c.on('close', function() { s.destroy(); });
-    s.connect('updates', function() { s.pipe(c); });
-
-    // subscription requests from the client
-    var r = context.socket('PUSH');
-    c.on('close', function() { r.destroy(); });
-    r.connect('subscriptions', function() { c.pipe(r); });
-  });
+  // Not convinced about this proxy thing.
+  scheduler_proxy.subscribe = function(topic) {
+    subscriptions.write(JSON.stringify({subscribe: topic}));
+  }
 });
 
+// Values and buffers for e.g., feed entries.
 
-// ==== Subscription server
+var spool = require('spool').createContext();
 
-var scheduler = snrub.createPoller();
-
-// Also act as a subscription server; NB this could be done in another
-// process.
-var srvcontext = rjs.createContext();
-srvcontext.on('ready', function() {
-  var pub = context.socket('PUB');
-  pub.connect('updates');
-  scheduler.on('update', function(topic, data, headers) {
-    sendNewEntries(topic, data, headers, pub);
-  });
-
-  var req = context.socket('PULL');
-  req.connect('subscriptions');
-  req.setEncoding('utf8');
-  req.on('data', function(d) {
-    subscriptionRequest(d, pub);
-  });
-});
-
-
-var dedup = snrub.dedup();
-
-function subscriptionRequest(str, sock) {
-  try {
-    var req = JSON.parse(str);
-    if (req['subscribe']) {
-      scheduler.register(req.subscribe);
-      sendEntries(req.subscribe, dedup.allEntries(req.subscribe), sock);
-    }
-  }
-  catch (err) {
-    console.warn({error: "Subscription request failed", reason: err});
-  }
+function injectUpdate(data) {
+  var update = JSON.parse(data);
+  var signal = spool.value(update['topic']);
+  signal.write(update['data']);
 }
 
-var NAMESPACES = {atom: 'http://www.w3.org/2005/Atom'};
+// Formulas
 
-function removeOtherNamespaces(element, href) {
-  if (element.namespace() &&
-      element.namespace().href() != href) {
-    element.remove();
-  }
-  else {
-    var attrs = element.attrs();
-    for (var i=0; i < attrs.length; i++) {
-      if (attrs[i].namespace() &&
-          attrs[i].namespace().href() != href) {
-        attrs[i].remove();
+// url
+function url(cell, url, client) {
+  scheduler_proxy.subscribe(url);
+  var signal = spool.value(url);
+  signal.read(function(data) {
+    client.write(JSON.stringify({update: data, type: 'value', cell: cell}));
+  });
+}
+
+// atom(url)
+function atom(cell, url, client) {
+  scheduler_proxy.subscribe(url);
+  var signal = spool.value(url);
+
+  // Ah now how do I make sure this happens only in one place?
+  // Assuming we have one server isn't enough -- I'd have to assume
+  // only one person wants any particular feed, or at least be happy
+  // to repeat work.
+  var buftopic = 'entries:' + url;
+  var buffer = spool.buffer(buftopic);
+  var metatopic = 'meta:' + url;
+  var meta = spool.value(metatopic);
+  shred_into(signal, meta, buffer);
+
+  meta.read(function(data) {
+    client.write(JSON.stringify({update: {meta: JSON.parse(data)},
+                                 type: 'feed', cell: cell}));
+  });
+  buffer.last(10, function(entries) {
+    client.write(JSON.stringify({update: {entries: entries},
+                                 type: 'feed', cell: cell}));
+  });
+}
+
+function shred_into(signal, meta, buffer) {
+  signal.read(function(data) {
+    var entries = [];
+    var doc = xml.parseXmlString(data);
+
+    var props = {
+      title: doc.root().get('/atom:feed/atom:title', NAMESPACES).text(),
+    };
+    meta.write(JSON.stringify(props));
+
+    var atomentries = doc.root().find('//atom:entry', NAMESPACES);
+    atomentries.forEach(function(entry) {
+      removeOtherNamespaces(entry, NAMESPACES['atom']);
+      entries.push({'id': entry.get('atom:id', NAMESPACES).text(),
+                    'data': entry.toString(),
+                    'timestamp': +new Date(entry.get('atom:updated', NAMESPACES).text())
+                   });
+    });
+    buffer.append(entries);
+  });
+}
+
+// Interpreter for client commands
+function clientConnection(conn) {
+  // only UTF8 is supported anyway
+  //conn.setEncoding('utf8');
+  conn.on('data', function(data) {
+    try {
+      var command = JSON.parse(data);
+      // {apply: formula, cell: address}
+      if (command.apply !== undefined && command.cell !== undefined) {
+        var matches;
+        if (matches = /atom\((.*)\)/.exec(command.apply)) {
+          url = matches[1];
+          atom(command.cell, url, conn);
+        }
+        else {
+          url(command.cell, command.apply, conn);
+        }
+      }
+      else {
+        console.warn({command_error: "Unable to interpret command",
+                      client_command: data});
+        conn.write(JSON.stringify({error: "Unable to interpret command"}));
       }
     }
-    var children = element.childNodes();
-    for (i=0; i < children.length; i++) {
-      removeOtherNamespaces(children[i], href);
+    catch (err) {
+      console.warn({command_error: err, client_command: data});
     }
-  }
+  });
 }
+
+// start the sceduler
+
+require('./scheduler');
+
+// === unused for now
 
 function sendEntries(topic, entries, sock) {
   entries.forEach(function(entry) {
@@ -150,3 +198,26 @@ function sendNewEntries(topic, data, headers, sock) {
   }
   sendEntries(topic, entries, sock);
 }
+
+var NAMESPACES = {atom: 'http://www.w3.org/2005/Atom'};
+
+function removeOtherNamespaces(element, href) {
+  if (element.namespace() &&
+      element.namespace().href() != href) {
+    element.remove();
+  }
+  else {
+    var attrs = element.attrs();
+    for (var i=0; i < attrs.length; i++) {
+      if (attrs[i].namespace() &&
+          attrs[i].namespace().href() != href) {
+        attrs[i].remove();
+      }
+    }
+    var children = element.childNodes();
+    for (i=0; i < children.length; i++) {
+      removeOtherNamespaces(children[i], href);
+    }
+  }
+}
+

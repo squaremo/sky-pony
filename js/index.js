@@ -25,40 +25,58 @@ model.addColumn = function() {
   model.columnDefs.push(new Column());
 };
 
+model.loadColumn = function() {
+  ;
+};
+
 var socket = new SockJS('/socket');
 var subscriber = new Subscriber(socket);
 
 model.save = function(tile) {
   tile.save();
+  tile.evaluating(true);
   var url = tile.formula();
   var updater = false;
   // Garbage collection. This should probably be done more
   // declaratively: say what the situation should be and let the
   // server sort it out.
-  subscriber.subscribe(url, function(update) {
+  tile.view(new Formula(url));
+  subscriber.apply(tile.cell, url, function(updateMsg) {
     // first time we get an update, look at the content type to see
     // what kind of tile we should make.
     if (!updater) {
-      var contentType = update.contentType;
-      if (contentType === 'application/atom+xml') {
-        var entries = ko.observableArray();
-        tile.view(new Stack(ko.observable(update.topic), entries));
-        updater = function(entry) {
-          var xml = $.parseXML(entry.data);
-          entries.push({
-            'title': $('title', xml).text(),
-            'href': $('link[rel="alternate"]', xml).attr('href')
-          });
+      var contentType = updateMsg['type'];
+      console.info(updateMsg);
+      if (contentType == 'feed') {
+        var title = ko.observable();
+        var entries = ko.observableArray([]);
+
+        tile.view(new Stack(title, entries, {}));
+        updater = function(update) {
+          if (update['meta']) {
+            title(update.meta.title);
+          }
+          if (update['entries']) {
+            var newEntries = update['entries'], len = newEntries.length;
+            for (var i = 0; i < len; i++) {
+              var entry = $.parseXML(newEntries[i].data);
+              entries.push({
+                title: $('title', entry).text(),
+                href: $('link[rel=alternate]', entry).attr('href')
+              });
+            }
+          }
         }
       }
       else {
-        value = ko.observable(update.data);
-        tile.view(new Value(value));
-        updater = function(entry) {
-          value(entry.data);
+        var value = ko.observable(url);
+        tile.view(new Resource(value, contentType));
+        updater = function(update) {
+          value(update);
         }
       }
     }
-    updater(update);
+    tile.evaluating(false);
+    updater(updateMsg.update);
   });
 };

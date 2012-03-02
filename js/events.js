@@ -5,17 +5,21 @@ function Subscriber(socket) {
   var subscriptions = this.subs = {};
   socket.onmessage = function(msg) {
     var js = JSON.parse(msg.data);
-    var event, topic;
-    if ((event = js.update) && (topic = event.topic)) {
-      if (subscriptions[topic]) {
-        subscriptions[topic](event);
+    console.info({recv: js});
+    var cell;
+    if ((js.update) && (cell = js.cell)) {
+      if (subscriptions[cell]) {
+        subscriptions[cell](js);
       }
+    }
+    else {
+      console.warn({unknown_event: msg.data});
     }
   };
 
-  this.subscribe = function(url, callback) {
-    subscriptions[url] = callback;
-    socket.send(JSON.stringify({subscribe: url}));
+  this.apply = function(cell, formula, callback) {
+    subscriptions[cell] = callback;
+    socket.send(JSON.stringify({apply: formula, cell: cell}));
   }
 }
 

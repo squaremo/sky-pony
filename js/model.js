@@ -34,6 +34,7 @@ function Tile() {
   var that = this;
   this.editing = ko.observable(true);
   this.formula = ko.observable('');
+  this.evaluating = ko.observable(false);
 
   this.save = function() {
     that.editing(false);
@@ -43,10 +44,19 @@ function Tile() {
     that.editing(true);
   };
 
+  this.cell = "[0][0]";
+
   this.view = ko.observable(new Formula(this.formula));
 }
 
 // === Views
+
+function Resource(url, observableTitle, contentType) {
+  this.url = url;
+  this.title = observableTitle;
+  this.type = contentType;
+  this.template = 'resource';
+}
 
 function Stack(observableTitle, observableCollection, attributes) {
   this.title = observableTitle;
