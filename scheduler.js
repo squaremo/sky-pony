@@ -26,7 +26,7 @@ function subscriptionRequest(str) {
     var req = JSON.parse(str);
     console.info({request: req});
     if (req['subscribe']) {
-      scheduler.register(req.subscribe);
+      scheduler.register(req.subscribe, {baseInterval: 60});
     }
   }
   catch (err) {

@@ -94,22 +94,23 @@ function atom(cell, url, client) {
 function shred_into(signal, meta, buffer) {
   signal.read(function(data) {
     var entries = [];
-    var doc = xml.parseXmlString(data);
+    if (data) {
+      var doc = xml.parseXmlString(data);
+      var props = {
+        title: doc.root().get('/atom:feed/atom:title', NAMESPACES).text(),
+      };
+      meta.write(JSON.stringify(props));
 
-    var props = {
-      title: doc.root().get('/atom:feed/atom:title', NAMESPACES).text(),
-    };
-    meta.write(JSON.stringify(props));
-
-    var atomentries = doc.root().find('//atom:entry', NAMESPACES);
-    atomentries.forEach(function(entry) {
-      removeOtherNamespaces(entry, NAMESPACES['atom']);
-      entries.push({'id': entry.get('atom:id', NAMESPACES).text(),
-                    'data': entry.toString(),
-                    'timestamp': +new Date(entry.get('atom:updated', NAMESPACES).text())
-                   });
-    });
-    buffer.append(entries);
+      var atomentries = doc.root().find('//atom:entry', NAMESPACES);
+      atomentries.forEach(function(entry) {
+        removeOtherNamespaces(entry, NAMESPACES['atom']);
+        entries.push({'id': entry.get('atom:id', NAMESPACES).text(),
+                      'data': entry.toString(),
+                      'timestamp': +new Date(entry.get('atom:updated', NAMESPACES).text())
+                     });
+      });
+      buffer.append(entries);
+    }
   });
 }
 
