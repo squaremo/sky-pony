@@ -50,8 +50,10 @@ context.on('ready', function() {
 var spool = require('spool').createContext();
 
 function injectUpdate(data) {
+  console.info({from_updates: data});
   var update = JSON.parse(data);
   var signal = spool.value(update['topic']);
+  console.info({writing_value: update['data']});
   signal.write(update['data']);
 }
 
@@ -69,7 +71,8 @@ function url(cell, url, client) {
 // atom(url)
 function atom(cell, url, client) {
   scheduler_proxy.subscribe(url);
-  var signal = spool.value(url);
+  rawkey = 'raw:' + url;
+  var signal = spool.value(rawkey);
 
   // Ah now how do I make sure this happens only in one place?
   // Assuming we have one server isn't enough -- I'd have to assume
@@ -86,6 +89,7 @@ function atom(cell, url, client) {
                                  type: 'feed', cell: cell}));
   });
   buffer.last(10, function(entries) {
+    console.info({entries_from_buffer: entries});
     client.write(JSON.stringify({update: {entries: entries},
                                  type: 'feed', cell: cell}));
   });
@@ -146,7 +150,7 @@ function clientConnection(conn) {
 
 // start the sceduler
 
-require('./scheduler');
+require('./scheduler').start();
 
 // === unused for now
 

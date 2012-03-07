@@ -3,33 +3,39 @@ var snrub = require('snrub'),
 
 // ==== Subscription server
 
-var scheduler = snrub.createPoller();
+exports.start = function() {
 
-// Listen for subscription requests, subscribe if necessary, and
-// publish updates.
+  var scheduler = snrub.createPoller();
 
-context.on('ready', function() {
-  var pub = context.socket('PUB');
-  pub.connect('updates');
-  scheduler.on('update', function(topic, data, headers) {
-    pub.write(JSON.stringify({topic: topic, data: data, headers: headers}));;
+  // Listen for subscription requests, subscribe if necessary, and
+  // publish updates.
+
+  context.on('ready', function() {
+    var pub = context.socket('PUB');
+    pub.connect('updates');
+    scheduler.on('update', function(topic, data, headers) {
+      console.info({polled_update: data, headers: headers});
+      pub.write(JSON.stringify({topic: topic, data: data, headers: headers}));;
+    });
+
+    var req = context.socket('PULL');
+    req.connect('subscriptions');
+    req.setEncoding('utf8');
+    req.on('data', subscriptionRequest);
   });
 
-  var req = context.socket('PULL');
-  req.connect('subscriptions');
-  req.setEncoding('utf8');
-  req.on('data', subscriptionRequest);
-});
-
-function subscriptionRequest(str) {
-  try {
-    var req = JSON.parse(str);
-    console.info({request: req});
-    if (req['subscribe']) {
-      scheduler.register(req.subscribe, {baseInterval: 60});
+  function subscriptionRequest(str) {
+    try {
+      var req = JSON.parse(str);
+      console.info({subscription_request: req});
+      if (req['subscribe']) {
+        // %%% Artificially low polling interval
+        scheduler.register(req.subscribe, {baseInterval: 60});
+      }
+    }
+    catch (err) {
+      console.warn({error: "Subscription request failed", reason: err});
     }
   }
-  catch (err) {
-    console.warn({error: "Subscription request failed", reason: err});
-  }
+
 }
