@@ -27,10 +27,28 @@ function Meter(observable, attributes) {
 
 function Column() {
   this.tiles = ko.observableArray();
-  this.add();
 }
-Column.prototype.add = function() {
-  this.tiles.push(new Tile(this));
+Column.prototype.newTile = function() {
+  this.add(new Tile(this));
+};
+Column.prototype.add = function(tile) {
+  this.tiles.push(tile);
+};
+Column.prototype.toJSON = function() {
+  var entries = [];
+  this.tiles().forEach(function(tile) {
+    entries.push({formula: tile.formula()});
+  });
+  return JSON.stringify(entries);
+}
+Column.fromJS = function(defs) {
+  var col = new Column();
+  defs.forEach(function(def) {
+    var tile = new Tile(col);
+    tile.formula(def.formula);
+    col.add(tile);
+  });
+  return col;
 };
 
 function Tile(col) {

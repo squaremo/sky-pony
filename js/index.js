@@ -26,11 +26,15 @@ model.addColumn = function() {
 };
 
 model.add = function(tile) {
-  tile.column().add();
-}
+  tile.column().newTile();
+};
 
-model.loadColumn = function() {
-  ;
+model.loadColumns = function() {
+  $.getJSON('/user/columns', function(js) {
+    js.columns.forEach(function(def) {
+      model.columnDefs.push(Column.fromJS(def));
+    });
+  });
 };
 
 var socket = new SockJS('/socket');
@@ -84,3 +88,5 @@ model.save = function(tile) {
     updater(updateMsg.update);
   });
 };
+
+model.loadColumns();

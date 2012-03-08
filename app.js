@@ -8,6 +8,7 @@ var app = express.createServer();
 
 app.configure(function() {
   app.use(express.static(__dirname));
+  app.use(require('./user').middleware());
 });
 
 var sjs = require('sockjs').listen(app, {prefix: '[/]socket'});
