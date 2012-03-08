@@ -25,6 +25,10 @@ model.addColumn = function() {
   model.columnDefs.push(new Column());
 };
 
+model.add = function(tile) {
+  tile.column().add();
+}
+
 model.loadColumn = function() {
   ;
 };

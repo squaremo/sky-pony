@@ -66,12 +66,14 @@
                           $(elems).find('*[data-role]').andSelf().trigger('create');
                         }}">
         </div>
-        <form data-bind="visible: editing,
-                         submit: function() {$root.save($data); return false;}"
-              class="formula">
+        <form data-bind="visible: editing" class="formula">
           <input data-bind="value: formula"/>
-          <input type="submit"
-                 data-role="button" data-icon="arrow-u" value="Apply"/>
+          <fieldset data-role="controlgroup" data-type="horizontal">
+            <button data-bind="click: function() {$root.save($data); return false;}"
+                    data-role="button" data-icon="arrow-u">Apply</button>
+            <button data-bind="click: function() {$root.save($data); $root.add($data); return false;}"
+                    data-role="button" data-icon="arrow-d">Add</button>
+          </fieldset>
         </form>
         <!-- /ko -->
       </section>

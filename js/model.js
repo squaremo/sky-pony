@@ -27,11 +27,15 @@ function Meter(observable, attributes) {
 
 function Column() {
   this.tiles = ko.observableArray();
-  this.tiles.push(new Tile());
+  this.add();
 }
+Column.prototype.add = function() {
+  this.tiles.push(new Tile(this));
+};
 
-function Tile() {
+function Tile(col) {
   var that = this;
+  this.column = ko.observable(col);
   this.editing = ko.observable(true);
   this.formula = ko.observable('');
   this.evaluating = ko.observable(false);
