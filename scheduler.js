@@ -14,7 +14,7 @@ exports.start = function() {
     var pub = context.socket('PUB');
     pub.connect('updates');
     scheduler.on('update', function(topic, data, headers) {
-      console.info({polled_update: data, headers: headers});
+      console.warn({polled_update: data, headers: headers});
       pub.write(JSON.stringify({topic: topic, data: data, headers: headers}));;
     });
 
@@ -27,7 +27,7 @@ exports.start = function() {
   function subscriptionRequest(str) {
     try {
       var req = JSON.parse(str);
-      console.info({subscription_request: req});
+      console.warn({subscription_request: req});
       if (req['subscribe']) {
         // %%% Artificially low polling interval
         scheduler.register(req.subscribe, {baseInterval: 60});

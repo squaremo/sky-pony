@@ -29,17 +29,19 @@ function Column() {
   this.tiles = ko.observableArray();
 }
 Column.prototype.newTile = function() {
-  this.add(new Tile(this));
+  var t = new Tile(this);
+  this.add(t);
+  return t;
 };
 Column.prototype.add = function(tile) {
   this.tiles.push(tile);
 };
-Column.prototype.toJSON = function() {
+Column.prototype.toJS = function() {
   var entries = [];
   this.tiles().forEach(function(tile) {
     entries.push({formula: tile.formula()});
   });
-  return JSON.stringify(entries);
+  return entries;
 }
 Column.fromJS = function(defs) {
   var col = new Column();
@@ -54,17 +56,8 @@ Column.fromJS = function(defs) {
 function Tile(col) {
   var that = this;
   this.column = ko.observable(col);
-  this.editing = ko.observable(true);
   this.formula = ko.observable('');
   this.evaluating = ko.observable(false);
-
-  this.save = function() {
-    that.editing(false);
-  };
-
-  this.edit = function() {
-    that.editing(true);
-  };
 
   this.cell = "[0][0]";
 

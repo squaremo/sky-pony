@@ -6,9 +6,12 @@ var express = require('express'),
 
 var app = express.createServer();
 
+// Values and buffers for e.g., feed entries.
+var spool = require('spool').createContext();
+
 app.configure(function() {
   app.use(express.static(__dirname));
-  app.use(require('./user').middleware());
+  app.use(require('./user').middleware(spool));
 });
 
 var sjs = require('sockjs').listen(app, {prefix: '[/]socket'});
@@ -46,15 +49,12 @@ context.on('ready', function() {
   }
 });
 
-// Values and buffers for e.g., feed entries.
-
-var spool = require('spool').createContext();
 
 function injectUpdate(data) {
-  console.info({from_updates: data});
+  console.warn({from_updates: data});
   var update = JSON.parse(data);
   var signal = spool.value(update['topic']);
-  console.info({writing_value: update['data']});
+  console.warn({writing_value: update['data']});
   signal.write(update['data']);
 }
 
@@ -90,7 +90,7 @@ function atom(cell, url, client) {
                                  type: 'feed', cell: cell}));
   });
   buffer.last(10, function(entries) {
-    console.info({entries_from_buffer: entries});
+    console.warn({entries_from_buffer: entries});
     client.write(JSON.stringify({update: {entries: entries},
                                  type: 'feed', cell: cell}));
   });

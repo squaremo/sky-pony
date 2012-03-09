@@ -6,7 +6,8 @@
 var model = {
   leftmostColumn: ko.observable(0),
   numVisibleColumns: ko.observable(1),
-  columnDefs: ko.observableArray()
+  columnDefs: ko.observableArray(),
+  editing: ko.observable(null)
 };
 
 model.visibleColumns = ko.computed(function() {
@@ -22,26 +23,54 @@ model.visibleColumns = ko.computed(function() {
 });
 
 model.addColumn = function() {
-  model.columnDefs.push(new Column());
+  var col = new Column();
+  var t = col.newTile();
+  model.columnDefs.push(col);
+  model.edit(t);
 };
 
-model.add = function(tile) {
-  tile.column().newTile();
+model.addAfter = function(tile) {
+  var nt = tile.column().newTile();
+  model.edit(nt);
 };
+
+model.edit = function(tile) {
+  model.editing(tile);
+}
 
 model.loadColumns = function() {
   $.getJSON('/user/columns', function(js) {
     js.columns.forEach(function(def) {
       model.columnDefs.push(Column.fromJS(def));
     });
+    model.visibleColumns().forEach(function(column) {
+      column.def.tiles().forEach(function(tile) {
+        console.log({activating: tile});
+        model.activate(tile);
+      });
+    });
   });
 };
 
+model.saveColumns = function(callback) {
+  var defs = [];
+  model.columnDefs().forEach(function(col) {
+    defs.push(col.toJS());
+  });
+  $.post('/user/columns', JSON.stringify({columns: defs}), callback);
+}
+
 var socket = new SockJS('/socket');
+// We must have an open socket before we can activate tiles
+socket.onopen = model.loadColumns;
+
 var subscriber = new Subscriber(socket);
 
-model.save = function(tile) {
-  tile.save();
+model.save = function() {
+  model.saveColumns(/* ... */);
+};
+
+model.activate = function(tile) {
   tile.evaluating(true);
   var url = tile.formula();
   var updater = false;
@@ -88,5 +117,3 @@ model.save = function(tile) {
     updater(updateMsg.update);
   });
 };
-
-model.loadColumns();
