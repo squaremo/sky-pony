@@ -66,6 +66,10 @@
                           $(elems).find('*[data-role]').andSelf().trigger('create');
                         }}">
         </div>
+        <a data-bind="click: function() { $root.edit($data); }"
+           data-role="button" data-icon="gear" data-iconpos="notext right">
+          Edit
+        </a>
         <form data-bind="if: $root.editing() === $data,
                          visible: $root.editing() === $data" class="formula">
           <input data-bind="value: formula"/>
@@ -85,20 +89,12 @@
 
     <script type="text/html" id="formula-template">
       <div class="tile">
-        <a data-bind="click: function() { $root.edit($data); }"
-           data-role="button" data-icon="gear" data-iconpos="notext">
-          Edit
-        </a>
         <span data-bind="text: value"/>
       </div>
     </script>
 
     <script type="text/html" id="resource-template">
       <div class="tile">
-        <a href="#" data-bind="click: function() { $root.edit($data); }"
-           data-role="button" data-icon="gear" data-iconpos="notext">
-          Edit
-        </a>
         <a data-bind="text: title, attr: {href: $data.url}"/>
         <br/>
         <small data-bind="text: type"/>
@@ -107,20 +103,12 @@
 
     <script type="text/html" id="value-template">
       <div class="tile">
-        <a href="#" data-bind="click: function() { $root.edit($data); }"
-           data-role="button" data-icon="gear" data-iconpos="notext">
-          Edit
-        </a>
         <span data-bind="text: value"/>
       </div>
     </script>
 
     <script type="text/html" id="stack-template">
       <div class="tile">
-        <a href="#" data-bind="click: function() { $root.edit($data); }"
-           data-role="button" data-icon="gear" data-iconpos="notext">
-          Edit
-        </a>
         <span data-bind="text: title"/>
         (<span data-bind="text: entries().length"/>)
         <a href="#" data-role="button" data-icon="plus" data-iconpos="notext"
