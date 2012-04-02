@@ -1,0 +1,325 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Sky Pony mockup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <!--link rel="stylesheet"
+        href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/-->
+    <style type="text/css">
+      /* body { padding-top: 40px; } */
+
+      /* Make this look a bit like a mobile device.
+      body {
+        width: 320px !important;
+        position: relative;
+        left: 50%;
+        margin-left: -160px !important;
+      } */
+
+      .chart {
+        width: 320px;
+        height: 50px;
+        margin-top: 4px;
+      }
+
+    </style>
+    <script src="js/jquery-1.7.1.js"></script>
+    <script type="text/javascript"
+            src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+  </head>
+  <body>
+
+    <!-- START -->
+    <div data-role="page" id="start" data-content-theme="c">
+      <header data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          Start
+        </h1>
+      </header>
+      <section data-role="content">
+        <section class="tile">
+          <a href="#new" data-role="button" data-icon="arrow-d" data-iconpos="bottom">Click to start</a>
+        </section>
+      </section>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- ENTER URL -->
+    <div data-role="page" id="new">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <section data-role="content">
+        <section class="tile">
+        </section>
+        <section class="formula">
+          <label for="source">URL or formula</label>
+          <input name="source" type="text" placeholder="URL or formula"
+                 value="http://dev.rabbitmq.com/mgmt/api/"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#source" data-role="button" data-icon="arrow-u">Apply</a>
+            <button href="#source" data-role="button" data-icon="plus" disabled="true">Add</button>
+            <a href="#source" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </section>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear"></a></h3>
+      </footer>
+    </div>
+
+    <!-- CHOOSE SCHEMA -->
+    <div data-role="page" id="source">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <section data-role="content">
+        <section class="tile source">
+          <p>
+            [JSON Array]
+            <small>application/json</small>
+          </p>
+        </section>
+        <section class="formula">
+
+          <fieldset data-role="controlgroup">
+            <legend>Choose schema</legend>
+            <input type="radio" name="radio-choice-1"
+                   id="radio-choice-1" value="choice-1" />
+            <label for="radio-choice-1">RabbitMQ / management</label>
+            <input type="radio" name="radio-choice-1"
+                   id="radio-choice-2" value="choice-2"  />
+            <label for="radio-choice-2">Raw JSON</label>
+          </fieldset>
+
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#items-select" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#items-select" data-role="button" data-icon="plus">Add</a>
+            <a href="#items-select" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </section>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- ENTER METRIC -->
+    <div data-role="page" id="items-select">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbit@rabbit-web-dev</h3>
+          <small>[RabbitMQ / management]</small>
+        </section>
+        <section class="tile source">
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="rabbitmq.mem_used(cell[0])"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#sample" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#sample" data-role="button" data-icon="plus">Add</a>
+            <a href="#sample" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- MEM METER -->
+    <div data-role="page" id="sample">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbit@rabbit-web-dev</h3>
+          <small>[RabbitMQ / management]</small>
+        </section>
+         <section class="tile meter">
+          <span class="sample">4</span>
+          <span class="unit">% mem used</span>
+        </section>
+        <section class="tile source">
+        </section>
+        <section class="formula">
+          <input value="rabbitmq.waiting_messages(cell[0])"/>
+          <label for="formula">Formula</label>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#meter" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#meter" data-role="button" data-icon="plus">Add</a>
+            <a href="#meter" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- MSGS METER -->
+    <div data-role="page" id="meter">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbit@rabbit-web-dev</h3>
+          <small>[RabbitMQ / management]</small>
+        </section>
+         <section class="tile meter">
+          <span class="sample">4</span>
+          <span class="unit">% mem used</span>
+        </section>
+        <section class="tile meter">
+          <span class="sample">110</span>
+          <span class="unit">messages waiting</span>
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="rabbitmq.waiting_messages(cell[0]).sparkline()"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#spark" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#spark" data-role="button" data-icon="plus">Add</a>
+            <a href="#spark" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- SPARKLINE -->
+    <div data-role="page" id="spark">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbit@rabbit-web-dev</h3>
+          <small>[RabbitMQ / management]</small>
+        </section>
+         <section class="tile meter">
+          <span class="sample">4</span>
+          <span class="unit">% mem used</span>
+        </section>
+        <section class="tile sparkline">
+          <div class="chart">
+          </div>
+          <span class="unit">messages waiting</span>
+        </section>
+        <section class="formula">
+          <input value="rabbitmq.waiting_messages(cell[0]).sparkline()"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#done" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#done" data-role="button" data-icon="plus">Add</a>
+            <a href="#done" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <!-- DONE -->
+    <div data-role="page" id="done">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [0]
+        </h1>
+        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
+          edit
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbit@rabbit-web-dev</h3>
+          <small>[RabbitMQ / management]</small>
+        </section>
+         <section class="tile meter">
+          <span class="sample">4</span>
+          <span class="unit">% mem used</span>
+        </section>
+        <section class="tile sparkline">
+          <div class="chart">
+          </div>
+          <span class="unit">messages waiting</span>
+        </section>
+      </div>
+      <footer data-role="footer">
+        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
+      </footer>
+    </div>
+
+    <script type="text/javascript">
+      $('#spark').add('#done').bind('pagebeforeshow', function() {
+        $('.chart').sparkline([100,150,200,300,100, 110, 100],
+                                {'type': 'line',
+                                 'height': '50px',
+                                 'width': '100%',
+                                 'barSpacing': '2px',
+                                 'fillColor': '#999',
+                                 'spotColor': false,
+                                 'minSpotColor': false,
+                                 'maxSpotColor': false,
+                                 'chartRangeMin': 0,
+                                 'lineColor': '#666'});
+       });
+       $('#spark').add('#done').bind('pageshow', function() {
+         $.sparkline_display_visible();
+       });
+    </script>
+
+
+  </body>
+</html>
