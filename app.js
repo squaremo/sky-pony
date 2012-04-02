@@ -53,7 +53,7 @@ context.on('ready', function() {
 function injectUpdate(data) {
   console.warn({from_updates: data});
   var update = JSON.parse(data);
-  var signal = spool.value(update['topic']);
+  var signal = spool.value('raw:' + update['topic']);
   console.warn({writing_value: update['data']});
   signal.write(update['data']);
 }
