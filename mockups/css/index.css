@@ -1,0 +1,121 @@
+/* Correct for jquery mobile */
+.ui-content {
+   padding: 0px;
+}
+
+.ui-page {
+   background: #333;
+}
+
+.tile {
+   width: 100%;
+   height: 60px;
+   padding: 2px 2px 20px 2px;
+   border-bottom: 2px solid #999;
+   border-top: 2px solid #fff;
+   background: #ffe;
+   background-image: -webkit-linear-gradient(top, #eef, #ffe);
+}
+
+.tile p {
+   padding: 8px;
+}
+
+.formula {
+   background: #ccc;
+   background-image: -webkit-linear-gradient(top, #666, #ccc 12px );
+   padding: 8px;
+   border-bottom: 2px solid #444;
+}
+
+.source {
+  background-image: -webkit-linear-gradient(top, #cce, #eef );
+}
+
+/* A varying value */
+
+.signal {
+}
+
+.carousel {
+   text-align: center;
+   vertical-align: middle;
+   font-size: 22px;
+   padding-top: 18px;
+}
+.carousel .sample:after {
+   content: '...';
+}
+
+/* kinds of display: just a value (with its unit) */
+
+.meter {
+   text-align: center;
+   position: relative;
+}
+
+.meter .sample {
+   font-size: 62px;
+   font-weight: bold;
+   text-shadow: 3px 3px 7px #666;
+   position: relative;
+   z-index: 10;
+}
+
+.unit {
+   display: block;
+   text-align: center;
+   margin-left: 6px;
+   font-size: 13px;
+   position: relative;
+   z-index: 10;
+}
+
+.meter .unit {
+   top: -9px;
+}
+
+.meter .sparkline {
+}
+
+.meter .sparkline div {
+   top: 0px;
+   height: 80px;
+   position: absolute;
+   z-index: 5;
+}
+
+.meter .sparkline canvas {
+}
+
+/* something exceeding a high water mark */
+
+.hwm {
+    color: #e33;
+}
+
+.folded {
+
+}
+
+.unfolded {
+   background-image: -webkit-linear-gradient(top, #eef, #ffe);
+}
+
+.folded .ui-btn {
+   float: right;
+   top: -52px;
+}
+
+ .unfolded .ui-btn {
+    float: left;
+    top: -52px;
+}
+
+.elem h3 {
+   -webkit-margin-before: 0.2em;
+   -webkit-margin-after: 0.3em;
+}
+.elem .precis {
+   font-size: 0.8em;
+}

@@ -29,6 +29,52 @@
     <script type="text/javascript"
             src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
     <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/knockout-2.0.0.js"></script>
+    <script type="text/javascript">
+      cyclers = [];
+
+      var chartOptions = {'type': 'line',
+                          'height': '50px',
+                          'width': '100%',
+                          'barSpacing': '2px',
+                          'fillColor': '#339',
+                          'spotColor': false,
+                          'minSpotColor': false,
+                          'maxSpotColor': false,
+                          'chartRangeMin': 0,
+                          'lineColor': '#666'};
+
+      function rotate() {
+        for (var i = 0; i < cyclers.length; i++) {
+          cyclers[i].rotate();
+        }
+        $('.chart').sparkline('html', chartOptions);
+        //$.sparkline_display_visible();
+        setTimeout(rotate, 3000);
+      }
+
+      function cycle(values) {
+        var ob = ko.observable(values[0]);
+        ob.rotate = function() {
+          values.push(values.shift());
+          ob(values[0]);
+        }
+        cyclers.push(ob);
+        return ob;
+      }
+
+      function series(values) {
+        var ob = ko.observableArray(values);
+        ob.rotate = function() {
+          values.push(values.shift());
+          ob(values);
+        }
+        cyclers.push(ob);
+        return ob;
+      }
+
+      rotate();
+    </script>
   </head>
   <body>
 
@@ -39,15 +85,15 @@
         <h1>
           Start
         </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
       </header>
       <section data-role="content">
         <section class="tile">
           <a href="#new" data-role="button" data-icon="arrow-d" data-iconpos="bottom">Click to start</a>
         </section>
       </section>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- ENTER URL -->
@@ -57,8 +103,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <section data-role="content">
@@ -75,9 +121,6 @@
           </p>
         </section>
       </section>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear"></a></h3>
-      </footer>
     </div>
 
     <!-- CHOOSE SCHEMA -->
@@ -87,8 +130,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <section data-role="content">
@@ -117,9 +160,6 @@
           </p>
         </section>
       </section>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- ENTER METRIC -->
@@ -129,8 +169,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <div data-role="content">
@@ -138,7 +178,7 @@
           <h3>rabbit@rabbit-web-dev</h3>
           <small>[RabbitMQ / management]</small>
         </section>
-        <section class="tile source">
+        <section class="tile">
         </section>
         <section class="formula">
           <input name="formula" type="text" placeholder="URL or formula"
@@ -150,9 +190,6 @@
           </p>
         </section>
       </div>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- MEM METER -->
@@ -162,8 +199,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <div data-role="content">
@@ -172,10 +209,10 @@
           <small>[RabbitMQ / management]</small>
         </section>
          <section class="tile meter">
-          <span class="sample">4</span>
+          <span class="sample" data-bind="text: mem_used">--</span>
           <span class="unit">% mem used</span>
         </section>
-        <section class="tile source">
+        <section class="tile">
         </section>
         <section class="formula">
           <input value="rabbitmq.waiting_messages(cell[0])"/>
@@ -187,9 +224,6 @@
           </p>
         </section>
       </div>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- MSGS METER -->
@@ -199,8 +233,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <div data-role="content">
@@ -209,11 +243,11 @@
           <small>[RabbitMQ / management]</small>
         </section>
          <section class="tile meter">
-          <span class="sample">4</span>
+          <span class="sample" data-bind="text: mem_used">--</span>
           <span class="unit">% mem used</span>
         </section>
         <section class="tile meter">
-          <span class="sample">110</span>
+          <span class="sample" data-bind="text: msgs_waiting">--</span>
           <span class="unit">messages waiting</span>
         </section>
         <section class="formula">
@@ -226,9 +260,6 @@
           </p>
         </section>
       </div>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- SPARKLINE -->
@@ -238,8 +269,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <div data-role="content">
@@ -248,11 +279,11 @@
           <small>[RabbitMQ / management]</small>
         </section>
          <section class="tile meter">
-          <span class="sample">4</span>
+          <span class="sample" data-bind="text: mem_used">--</span>
           <span class="unit">% mem used</span>
         </section>
         <section class="tile sparkline">
-          <div class="chart">
+          <div class="chart" data-bind="attr: {'values': msgs_waiting_series }">
           </div>
           <span class="unit">messages waiting</span>
         </section>
@@ -265,9 +296,6 @@
           </p>
         </section>
       </div>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
     <!-- DONE -->
@@ -277,8 +305,8 @@
         <h1>
           [0]
         </h1>
-        <a href="#" data-role="button" data-icon="gear" data-iconpos="right">
-          edit
+        <a href="#github" data-role="button" data-icon="plus" data-iconpos="right">
+          new
         </a>
       </div>
       <div data-role="content">
@@ -287,37 +315,280 @@
           <small>[RabbitMQ / management]</small>
         </section>
          <section class="tile meter">
-          <span class="sample">4</span>
+          <span class="sample" data-bind="text: mem_used"></span>
           <span class="unit">% mem used</span>
         </section>
         <section class="tile sparkline">
-          <div class="chart">
+          <div class="chart" data-bind="attr: {'values': msgs_waiting_series}">
           </div>
           <span class="unit">messages waiting</span>
         </section>
       </div>
-      <footer data-role="footer">
-        <h3><a href="#settings" data-role="button" data-icon="gear">Settings</a></h3>
-      </footer>
     </div>
 
+    <!-- GITHUB -->
+    <div data-role="page" id="github" data-content-theme="c">
+      <header data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+      </header>
+      <section data-role="content">
+        <section class="tile">
+        </section>
+        <section class="formula">
+          <label for="source">URL or formula</label>
+          <input name="source" type="text" placeholder="URL or formula"
+                 value="https://github.com/rabbitmq"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#github-schema" data-role="button" data-icon="arrow-u">Apply</a>
+            <button href="#" data-role="button" data-icon="plus" disabled="true">Add</button>
+            <a href="#" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </section>
+    </div>
+
+    <!-- CHOOSE SCHEMA GITHUB -->
+    <div data-role="page" id="github-schema">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <section data-role="content">
+        <section class="tile source">
+          <p>
+            [JSON Array]
+            <small>application/json</small>
+          </p>
+        </section>
+        <section class="formula">
+
+          <fieldset data-role="controlgroup">
+            <legend>Choose schema</legend>
+            <input type="radio" name="radio-choice-1"
+                   id="radio-choice-1" value="choice-1" />
+            <label for="radio-choice-1">GitHub / organisation</label>
+            <input type="radio" name="radio-choice-1"
+                   id="radio-choice-2" value="choice-2"  />
+            <label for="radio-choice-2">Raw JSON</label>
+          </fieldset>
+
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#github-chosen" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#github-chosen" data-role="button" data-icon="plus">Add</a>
+            <a href="#github-chosen" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </section>
+    </div>
+
+    <!-- GITHUB DISPLAY -->
+    <div data-role="page" id="github-chosen">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbitmq</h3>
+          <small>[GitHub / organisation]</small>
+        </section>
+        <section class="tile">
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="github.org_activity(cell[0])"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#github-activity" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#github-activity" data-role="button" data-icon="plus">Add</a>
+            <a href="#github-activity" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- GITHUB REPO LIST -->
+    <div data-role="page" id="github-activity">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbitmq</h3>
+          <small>[GitHub / organisation]</small>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 3,25,3,6,3,12,6 -->
+          </div>
+          <span class="unit">
+            7 day activity
+          </span>
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="github.org_activity(cell[0])"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#github-issues" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#github-issues" data-role="button" data-icon="plus">Add</a>
+            <a href="#github-issues" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- GITHUB ISSUES -->
+    <div data-role="page" id="github-issues">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbitmq</h3>
+          <small>[GitHub / organisation]</small>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 3,25,3,6,3,12,6 -->
+          </div>
+          <span class="unit">
+            7 day activity
+          </span>
+        </section>
+        <section class="tile">
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="github.org_issues_closed(cell[0])"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#github-burndown" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#github-burndown" data-role="button" data-icon="plus">Add</a>
+            <a href="#github-burndown" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- GITHUB ISSUES CHART -->
+    <div data-role="page" id="github-burndown">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbitmq</h3>
+          <small>[GitHub / organisation]</small>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 3,25,3,6,3,12,6 -->
+          </div>
+          <span class="unit">
+            7 day activity
+          </span>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 5,6,5,4,1,0,8 -->
+          </div>
+          <span class="unit">
+            7 day issues closed
+          </span>
+        </section>
+        <section class="formula">
+          <input name="formula" type="text" placeholder="URL or formula"
+                 value="github.org_issues_closed(cell[0])"/>
+          <p data-role="controlgroup" data-type="horizontal">
+            <a href="#githubdone" data-role="button" data-icon="arrow-u">Apply</a>
+            <a href="#githubdone" data-role="button" data-icon="plus">Add</a>
+            <a href="#githubdone" data-role="button" data-icon="check">Done</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- GITHUB DONE -->
+    <div data-role="page" id="githubdone">
+      <div data-role="header">
+        <a href="#start" data-role="button" data-icon="home">Start</a>
+        <h1>
+          [1]
+        </h1>
+        <a href="#" data-role="button" data-icon="plus" data-iconpos="right">
+          new
+        </a>
+      </div>
+      <div data-role="content">
+        <section class="tile source">
+          <h3>rabbitmq</h3>
+          <small>[GitHub / organisation]</small>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 3,25,3,6,3,12,6 -->
+          </div>
+          <span class="unit">
+            7 day activity
+          </span>
+        </section>
+        <section class="tile folded sparkline">
+          <div class="chart">
+            <!-- 5,6,5,4,1,0,8 -->
+          </div>
+          <span class="unit">
+            7 day issues closed
+          </span>
+        </section>
+      </div>
+    </div>
+
+
     <script type="text/javascript">
-      $('#spark').add('#done').bind('pagebeforeshow', function() {
-        $('.chart').sparkline([100,150,200,300,100, 110, 100],
-                                {'type': 'line',
-                                 'height': '50px',
-                                 'width': '100%',
-                                 'barSpacing': '2px',
-                                 'fillColor': '#999',
-                                 'spotColor': false,
-                                 'minSpotColor': false,
-                                 'maxSpotColor': false,
-                                 'chartRangeMin': 0,
-                                 'lineColor': '#666'});
-       });
-       $('#spark').add('#done').bind('pageshow', function() {
+      //$('*[data-role=page]').bind('pagebeforeshow', function() {
+      //  $('.chart', this).sparkline('html',
+      //                          );
+      // });
+       $('*[data-role=page]').bind('pageshow', function() {
          $.sparkline_display_visible();
        });
+
+       var model = {};
+       model.mem_used = cycle([4, 5, 7, 10, 6, 4]);
+       model.msgs_waiting = cycle([110,120,130,150,110,90,50,100,
+                                   200,300,350,350,310,150,0,0,20,50]);
+       model.msgs_waiting_series = series([110,120,130,150,110,90,50,100,
+                                           200,300,350,350,310,150,0,0,20,50]);
+       ko.applyBindings(model);
     </script>
 
 
